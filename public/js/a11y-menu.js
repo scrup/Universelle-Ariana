@@ -1,6 +1,9 @@
 (() => {
-  const STORAGE_KEY = "uc_a11y_full_v6";
+  const STORAGE_KEY = "uc_a11y_full_v7";
 
+  // =========================
+  // State
+  // =========================
   const state = {
     fontScale: 1,          // 1.0 -> 1.7
     lineHeight: 1.6,       // 1.3 -> 2.4
@@ -18,7 +21,9 @@
     bigCursor: false,
 
     readingGuide: false,
-    dyslexiaFriendly: false
+    dyslexiaFriendly: false,
+
+    keyboardNav: false
   };
 
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -35,6 +40,80 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }
 
+  // =========================
+  // Keyboard navigation (arrows + enter)
+  // =========================
+  function setupKeyboardNavigation() {
+    let enabled = false;
+
+    const isVisible = (el) => !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+    const focusables = () => Array.from(document.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )).filter(isVisible);
+
+    function onKeyDown(e) {
+      if (!enabled) return;
+
+      const tag = (e.target?.tagName || "").toLowerCase();
+      const isTyping = tag === "input" || tag === "textarea" || tag === "select";
+      if (isTyping) return;
+
+      const els = focusables();
+      if (!els.length) return;
+
+      const active = document.activeElement;
+      const idx = Math.max(0, els.indexOf(active));
+
+      // Arrow keys move focus
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+        e.preventDefault();
+        (els[idx + 1] || els[0]).focus();
+        return;
+      }
+
+      if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        (els[idx - 1] || els[els.length - 1]).focus();
+        return;
+      }
+
+      // Enter activates focused link/button
+      if (e.key === "Enter") {
+        const el = document.activeElement;
+        if (!el) return;
+
+        const role = (el.getAttribute("role") || "").toLowerCase();
+        const tagName = (el.tagName || "").toUpperCase();
+
+        if (tagName === "A" || tagName === "BUTTON" || role === "button") {
+          e.preventDefault();
+          el.click();
+        }
+        return;
+      }
+
+      // Esc closes the a11y panel if open
+      if (e.key === "Escape") {
+        const panel = document.getElementById("uc-a11y-panel");
+        const fab = document.querySelector(".uc-a11y__fab");
+        if (panel && !panel.hidden) {
+          panel.hidden = true;
+          fab?.setAttribute("aria-expanded", "false");
+          fab?.focus();
+        }
+      }
+    }
+
+    document.addEventListener("keydown", onKeyDown, true);
+
+    return {
+      setEnabled(v) { enabled = !!v; }
+    };
+  }
+
+  // =========================
+  // Apply styles/state
+  // =========================
   function apply() {
     const root = document.documentElement;
 
@@ -53,16 +132,19 @@
     document.body.classList.toggle("uc-big-cursor", state.bigCursor);
     document.body.classList.toggle("uc-reading-guide", state.readingGuide);
     document.body.classList.toggle("uc-dyslexia", state.dyslexiaFriendly);
+    document.body.classList.toggle("uc-keyboard-nav", state.keyboardNav);
 
-    // small helpful auto-tweaks when dyslexia mode is on
+    // gentle auto-tweaks for dyslexia mode
     if (state.dyslexiaFriendly) {
-      // ensure comfortable line-height/spacing without being extreme
       root.style.setProperty("--uc-line-height", Math.max(state.lineHeight, 1.8));
       root.style.setProperty("--uc-letter-spacing", `${Math.max(state.letterSpacing, 0.03)}em`);
       root.style.setProperty("--uc-word-spacing", `${Math.max(state.wordSpacing, 0.08)}em`);
     }
   }
 
+  // =========================
+  // Inject CSS
+  // =========================
   function injectCSS() {
     const css = `
       :root{
@@ -74,11 +156,22 @@
       }
 
       html{ font-size: calc(16px * var(--uc-font-scale)); }
-      body{ line-height: var(--uc-line-height); letter-spacing: var(--uc-letter-spacing); word-spacing: var(--uc-word-spacing); }
-      body{ filter: saturate(var(--uc-saturation)); }
+      body{
+        line-height: var(--uc-line-height);
+        letter-spacing: var(--uc-letter-spacing);
+        word-spacing: var(--uc-word-spacing);
+        filter: saturate(var(--uc-saturation));
+      }
 
       body.uc-grayscale{ filter: grayscale(1) saturate(var(--uc-saturation)); }
       body.uc-invert{ filter: invert(1) hue-rotate(180deg) saturate(var(--uc-saturation)); }
+
+      /* Visible focus ring for keyboard users */
+      :focus-visible{
+        outline: 3px solid rgba(255, 213, 74, 0.95);
+        outline-offset: 3px;
+        border-radius: 10px;
+      }
 
       body.uc-contrast{
         background:#000 !important;
@@ -120,14 +213,12 @@
         cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><path fill='black' d='M6 4l16 34 4-12 12-4z'/><path fill='white' d='M8 8l12 26 3-9 9-3z'/></svg>") 0 0, auto !important;
       }
 
-      /* Dyslexia-friendly (system fonts, no downloads) */
+      /* Dyslexia-friendly (system fonts) */
       body.uc-dyslexia{
         font-family: Verdana, Arial, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, sans-serif !important;
       }
       body.uc-dyslexia p,
-      body.uc-dyslexia li{
-        max-width: 70ch;
-      }
+      body.uc-dyslexia li{ max-width: 70ch; }
 
       /* Reading guide line */
       .uc-reading-line{
@@ -139,53 +230,80 @@
       }
       body.uc-reading-guide .uc-reading-line{ display:block; }
 
-      /* ✅ BUTTON POSITION IS HERE */
-.uc-a11y{
-  position: fixed;
-  right: 16px;     /* right side */
-  top: 50%;        /* middle vertically */
-  transform: translateY(-50%);
-  z-index: 9999;
-}
-
+      /* Button placement: RIGHT + MIDDLE */
+      .uc-a11y{
+        position: fixed;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 9999;
+        font-family: system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      }
 
       .uc-a11y__fab{
-    background:#8a232e;color:#fff;border:none;border-radius:999px;
-        padding:.7rem 1rem;box-shadow:0 10px 24px rgba(0,0,0,.18);
-        display:flex;gap:.5rem;align-items:center;font-weight:900
+        background:#8a232e;
+        color:#fff;
+        border:none;
+        border-radius:999px;
+        width:52px;
+        height:52px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        box-shadow:0 10px 24px rgba(0,0,0,.18);
+        font-size:20px;
+        font-weight:900;
       }
-      .uc-a11y__fab:focus{outline:3px solid rgba(255,255,255,.7);outline-offset:3px}
+
+      .uc-a11y__fab:focus{
+        outline:3px solid rgba(255,255,255,.7);
+        outline-offset:3px
+      }
+
       .uc-a11y__panel{
         width:min(380px,calc(100vw - 32px));
-        margin-top:.6rem;background:#fff;border-radius:16px;
-        box-shadow:0 16px 40px rgba(0,0,0,.22);overflow:hidden
+        margin-top:.6rem;
+        background:#fff;
+        border-radius:16px;
+        box-shadow:0 16px 40px rgba(0,0,0,.22);
+        overflow:auto;
+        max-height:80vh;
       }
+
       .uc-a11y__header{
         display:flex;justify-content:space-between;align-items:center;
         padding:12px 14px;background:#F6FAFD
       }
       .uc-a11y__close{background:transparent;border:none;font-size:18px;cursor:pointer}
+
       .uc-a11y__section{padding:14px;display:grid;gap:12px}
       .uc-a11y__row{display:flex;justify-content:space-between;align-items:center;gap:12px}
       .uc-a11y__btnGroup{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+
       .uc-a11y__btn{
         border:1px solid #D7E6F2;background:#fff;border-radius:10px;
         padding:.45rem .7rem;font-weight:900;cursor:pointer
       }
       .uc-a11y__btn--full{width:100%}
+
       .uc-a11y__toggle{display:flex;align-items:center;gap:10px}
       .uc-a11y__toggle input{width:18px;height:18px}
+
       .uc-a11y__footer{padding:14px;border-top:1px solid #EEF4FA}
       .uc-a11y__label{font-weight:900;color:#0B1F2D}
       .uc-a11y__hint{font-size:12px;color:#4B6A80}
       .uc-a11y__mini{font-size:12px;color:#4B6A80}
       .uc-a11y__divider{height:1px;background:#EEF4FA;margin:6px 0}
     `;
+
     const style = document.createElement("style");
     style.textContent = css;
     document.head.appendChild(style);
   }
 
+  // =========================
+  // Overlays
+  // =========================
   function ensureOverlays() {
     if (!document.querySelector(".uc-reading-line")) {
       const line = document.createElement("div");
@@ -199,13 +317,16 @@
     });
   }
 
-  function createUI() {
+  // =========================
+  // UI
+  // =========================
+  function createUI(kb) {
     const wrap = document.createElement("div");
     wrap.className = "uc-a11y";
 
     wrap.innerHTML = `
-      <button class="uc-a11y__fab" type="button" aria-haspopup="dialog" aria-controls="uc-a11y-panel" aria-expanded="false">
-         🩵
+      <button class="uc-a11y__fab" type="button" aria-haspopup="dialog" aria-controls="uc-a11y-panel" aria-expanded="false" aria-label="Accessibilité">
+        💕
       </button>
 
       <div class="uc-a11y__panel" id="uc-a11y-panel" role="dialog" aria-label="Menu d’accessibilité" aria-modal="false" hidden>
@@ -264,6 +385,8 @@
           <label class="uc-a11y__toggle"><input type="checkbox" data-toggle="readingGuide"><span>Guide de lecture</span></label>
           <label class="uc-a11y__toggle"><input type="checkbox" data-toggle="dyslexiaFriendly"><span>Police “dyslexie-friendly”</span></label>
 
+          <label class="uc-a11y__toggle"><input type="checkbox" data-toggle="keyboardNav"><span>Navigation clavier (flèches + entrée)</span></label>
+
           <label class="uc-a11y__toggle"><input type="checkbox" data-toggle="contrast"><span>Contraste élevé</span></label>
           <label class="uc-a11y__toggle"><input type="checkbox" data-toggle="invert"><span>Inverser les couleurs</span></label>
           <label class="uc-a11y__toggle"><input type="checkbox" data-toggle="grayscale"><span>Mode gris</span></label>
@@ -297,6 +420,7 @@
     wrap.querySelector('[data-toggle="bigCursor"]').checked = state.bigCursor;
     wrap.querySelector('[data-toggle="readingGuide"]').checked = state.readingGuide;
     wrap.querySelector('[data-toggle="dyslexiaFriendly"]').checked = state.dyslexiaFriendly;
+    wrap.querySelector('[data-toggle="keyboardNav"]').checked = state.keyboardNav;
 
     function open() {
       panel.hidden = false;
@@ -343,18 +467,23 @@
         state.lineHeight = 1.6;
         state.letterSpacing = 0;
         state.wordSpacing = 0;
+
         state.contrast = false;
         state.invert = false;
         state.grayscale = false;
         state.saturation = 1;
+
         state.highlightLinks = false;
         state.highlightHeadings = false;
         state.hideImages = false;
         state.bigCursor = false;
+
         state.readingGuide = false;
         state.dyslexiaFriendly = false;
+        state.keyboardNav = false;
 
         wrap.querySelectorAll("[data-toggle]").forEach((i) => (i.checked = false));
+        kb.setEnabled(false);
       }
 
       save();
@@ -379,16 +508,28 @@
       if (t === "readingGuide") state.readingGuide = v;
       if (t === "dyslexiaFriendly") state.dyslexiaFriendly = v;
 
+      if (t === "keyboardNav") {
+        state.keyboardNav = v;
+        kb.setEnabled(v);
+      }
+
       save();
       apply();
     });
   }
 
+  // =========================
+  // Boot
+  // =========================
   document.addEventListener("DOMContentLoaded", () => {
     load();
     injectCSS();
     ensureOverlays();
+
+    const kb = setupKeyboardNavigation();
+    kb.setEnabled(state.keyboardNav);
+
     apply();
-    createUI();
+    createUI(kb);
   });
 })();
