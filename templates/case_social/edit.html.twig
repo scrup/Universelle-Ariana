@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Case - {{ caseSocial.title }}{% endblock %}
+
+{% block body %}
+    <div class="mb-4">
+        <h1>Edit Social Case</h1>
+        <p class="lead text-muted">{{ caseSocial.title }}</p>
+    </div>
+
+    {{ include('case_social/_form.html.twig', {'button_label': 'Update Case'}) }}
+
+    <div class="mt-4">
+        <hr class="my-4">
+        <h4 class="text-danger">Danger Zone</h4>
+        {{ include('case_social/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Association Dashboard — universellecellule{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="h4 fw-bold mb-1">Association Dashboard</h1>
+            <p class="text-muted small mb-0">Manage your cases</p>
+        </div>
+        <a href="{{ path('app_case_social_new') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Create New Case</a>
+    </div>
+
+    {# KPI Cards #}
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-label">My Cases</div>
+                <div class="kpi-value">{{ cases is defined ? cases|length : (myCases is defined ? myCases|length : 0) }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-label">Pending</div>
+                <div class="kpi-value text-warning">{{ pendingCount|default(0) }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-label">Published</div>
+                <div class="kpi-value text-success">{{ publishedCount|default(0) }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Views</div>
+                <div class="kpi-value">{{ totalViews|default(0) }}</div>
+            </div>
+        </div>
+    </div>
+
+    {# My Cases Table #}
+    <div class="card miaza-card">
+        <div class="card-header bg-white border-bottom py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-folder2-open me-2"></i>My Cases</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Views</th>
+                        <th>Donations</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set items = cases is defined ? cases : (myCases is defined ? myCases : []) %}
+                    {% for caseSocial in items %}
+                        <tr>
+                            <td>
+                                <strong>{{ caseSocial.title }}</strong>
+                                {% if caseSocial.isUrgent() %}
+                                    <span class="badge-urgent ms-2">Urgent</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if caseSocial.status == 'PENDING' %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                {% elseif caseSocial.status == 'PUBLISHED' %}
+                                    <span class="badge bg-success">Published</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ caseSocial.viewsCount|default(0) }}</td>
+                            <td>{{ caseSocial.donations|length|default(0) }}</td>
+                            <td><small>{{ caseSocial.createdAt|date('M d, Y') }}</small></td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a class="btn btn-sm btn-outline-primary" href="{{ path('app_case_social_show', {id: caseSocial.id}) }}" title="View"><i class="bi bi-eye"></i></a>
+                                    <a class="btn btn-sm btn-outline-primary" href="{{ path('app_case_social_edit', {id: caseSocial.id}) }}" title="Edit"><i class="bi bi-pencil"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state py-0 border-0">
+                                    <i class="bi bi-folder2 empty-icon d-block mb-2"></i>
+                                    <p class="text-muted mb-3">You have no cases yet.</p>
+                                    <a href="{{ path('app_case_social_new') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-2"></i>Create your first case</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if rejectedCount is defined and rejectedCount > 0 %}
+        <div class="alert alert-danger mt-4">
+            <i class="bi bi-exclamation-triangle me-2"></i><strong>{{ rejectedCount }} case(s) rejected</strong> — Please review and resubmit.
+        </div>
+    {% endif %}
+{% endblock %}

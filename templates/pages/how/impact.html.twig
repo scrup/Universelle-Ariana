@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Impact — How it works{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ path('app_homepage') }}">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Impact</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <h1 class="h3 mb-3">See real impact</h1>
+      <p class="lead">We track outcomes and publish follow-up stories so donors can see the difference their contributions make.</p>
+
+      <h2 class="h5 mt-4">Updates and reports</h2>
+      <p>Case owners are encouraged to provide receipts and narrative updates; verified reports are highlighted on the case page.</p>
+
+      <h2 class="h5 mt-4">Share outcomes</h2>
+      <p>Donors can opt to receive progress emails and share stories on social media to amplify impact.</p>
+
+      <a class="btn btn-primary mt-3" href="{{ path('app_case_social_index') }}">Browse impact stories</a>
+    </div>
+    <aside class="col-lg-4">
+      <div class="miaza-card p-3">
+        <h6 class="mb-2">Reporting</h6>
+        <p class="small text-muted">Learn how we validate and publish impact reports.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

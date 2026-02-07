@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Discover — How it works{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ path('app_homepage') }}">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Discover</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <h1 class="h3 mb-3">Discover verified cases</h1>
+      <p class="lead">Our platform surfaces social causes reviewed by our moderation team and community partners. Each case includes supporting documentation, a clear budget breakdown, and updates as funds are used.</p>
+
+      <h2 class="h5 mt-4">How cases are selected</h2>
+      <ul>
+        <li>Initial submission by organizations or individuals with contact information.</li>
+        <li>Verification by our moderators and partner organizations.</li>
+        <li>Transparency checks: receipts, budgets and outcome tracking.</li>
+      </ul>
+
+      <h2 class="h5 mt-4">Find the right cause</h2>
+      <p>Use filters, categories and urgency markers to find cases that match your interests. You can follow a case to receive updates, or donate securely through our platform.</p>
+
+      <a class="btn btn-primary mt-3" href="{{ path('app_case_social_index') }}">Browse cases</a>
+    </div>
+    <aside class="col-lg-4">
+      <div class="miaza-card p-3">
+        <h6 class="mb-2">Need help?</h6>
+        <p class="small text-muted">Contact support for guidance on verifying cases or to become a partner reviewer.</p>
+        <a class="btn btn-outline-secondary btn-sm" href="{{ path('app_profile_donations') }}">My donations</a>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

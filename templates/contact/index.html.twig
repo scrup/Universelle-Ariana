@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact — universellecellule{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ path('app_homepage') }}">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Contact</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+      <div class="col-lg-6">
+      <div class="miaza-card p-4">
+        <h1 class="h4">Contact & Organization</h1>
+        <p class="text-muted">Below are the contact details and core information about the association.</p>
+
+        <h6 class="mt-3">Organisation</h6>
+        <p class="mb-1"><strong>Universelle Cellule Ariana</strong></p>
+
+        <dl class="row small">
+          <dt class="col-sm-5">Bénéficiaires</dt>
+          <dd class="col-sm-7">Personnes impactées par l’association &nbsp;<strong>+300 000</strong></dd>
+
+          <dt class="col-sm-5">Membres actifs</dt>
+          <dd class="col-sm-7">Volontaires engagés &nbsp;<strong>44</strong></dd>
+
+          <dt class="col-sm-5">Date de création</dt>
+          <dd class="col-sm-7">Fondation de l’association &nbsp;<strong>21 Juillet 2021</strong></dd>
+
+          <dt class="col-sm-5">Zone d’intervention</dt>
+          <dd class="col-sm-7">Portée géographique &nbsp;<strong>Locale et Régionale</strong></dd>
+
+          <dt class="col-sm-5">Secteur d’activité</dt>
+          <dd class="col-sm-7">Domaines d’action &nbsp;<strong>Social</strong></dd>
+        </dl>
+
+        <h6 class="mt-3">Événement</h6>
+        <p class="mb-1"><strong>Hackathon Maratech 2026</strong><br/><small class="text-muted">Dates: 6–8 Février 2026</small></p>
+
+        <h6 class="mt-3">Contact principal</h6>
+        <p class="mb-1"><strong>Fatma Taghouti (Présidente)</strong></p>
+        <p class="small text-muted mb-1"><i class="bi bi-telephone me-1"></i> 95403001</p>
+        <p class="small text-muted mb-1"><i class="bi bi-envelope me-1"></i> <a href="mailto:universellecelluleariana@gmail.com">universellecelluleariana@gmail.com</a></p>
+        <p class="small text-muted mb-1"><i class="bi bi-globe2 me-1"></i> <a href="https://universellecellule.wixsite.com/website-2/" target="_blank" rel="noopener">universellecellule.wixsite.com</a></p>
+
+        <h6 class="mt-3">Actualités & Réseaux</h6>
+        <p class="small text-muted mb-1">Nos actualités: voir page d'actualités</p>
+        <p class="small mb-0">Réseaux sociaux:
+          <a href="#" class="ms-1">Facebook</a>,
+          <a href="#" class="ms-1">Instagram</a>,
+          <a href="#" class="ms-1">LinkedIn</a>
+        </p>
+
+        <div class="mt-4">
+          <a class="btn btn-primary" href="mailto:universellecelluleariana@gmail.com">Envoyer un e-mail</a>
+          <a class="btn btn-outline-secondary ms-2" href="{{ path('app_case_social_index') }}">Parcourir les cas</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="miaza-card p-0 overflow-hidden">
+        <div style="width:100%;height:420px;">
+          <iframe
+            src="https://maps.google.com/maps?q=36.861444,10.156056&z=17&output=embed"
+            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+      </div>
+      <div class="text-muted small mt-2">Coordinates: 36°51'41.2"N 10°09'21.8"E (36.861444, 10.156056)</div>
+      <div class="text-muted small">Open in maps: <a href="https://www.google.com/maps/search/?api=1&query=36.861444,10.156056" target="_blank" rel="noopener">Open in Google Maps</a></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

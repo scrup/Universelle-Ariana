@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login — universellecellule{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center align-items-center py-5">
+        <div class="col-12 col-sm-10 col-md-6 col-lg-5 col-xl-4">
+            <div class="card auth-card border-0 shadow">
+                <div class="card-header bg-primary text-white text-center py-4 rounded-top-3">
+                    <i class="bi bi-heart-fill display-6 d-block mb-2"></i>
+                    <h3 class="mb-0 fw-bold">Welcome Back</h3>
+                    <p class="small mb-0 mt-1 opacity-90">Sign in to support causes</p>
+                </div>
+
+                <div class="card-body p-4">
+                    {% if error %}
+                        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-start" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                            <div class="flex-grow-1">
+                                <strong>Login failed</strong><br>
+                                {{ error.messageKey|trans(error.messageData, 'security') }}
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
+
+                    <form method="post" action="{{ path('app_login') }}" novalidate>
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-medium">Email Address</label>
+                            <input type="email"
+                                   id="username"
+                                   name="_username"
+                                   value="{{ last_username|default('') }}"
+                                   class="form-control form-control-lg"
+                                   placeholder="you@example.com"
+                                   required
+                                   autofocus
+                                   autocomplete="email">
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-medium">Password</label>
+                            <input type="password"
+                                   id="password"
+                                   name="_password"
+                                   class="form-control form-control-lg"
+                                   placeholder="••••••••"
+                                   required
+                                   autocomplete="current-password">
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-lg" type="submit">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="small text-muted mb-2">Test credentials:</p>
+                        <code class="small d-block text-start bg-light p-2 rounded">admin@test.com / admin123</code>
+                        <code class="small d-block text-start bg-light p-2 rounded mt-1">assoc@test.com / assoc123</code>
+                        <code class="small d-block text-start bg-light p-2 rounded mt-1">donor@test.com / donor123</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{{ path('app_homepage') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Back Home
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

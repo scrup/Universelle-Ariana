@@ -1,0 +1,161 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'home.title'|trans }}{% endblock %}
+
+{% block body %}
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <h1 id="hero-title">{{ 'home.title'|trans }}</h1>
+        <p class="lead">{{ 'home.subtitle'|trans({}, 'messages') }}</p>
+
+        <div class="hero-cta">
+          <a class="btn btn-donate" href="{{ path('app_case_social_index') }}">{{ 'hero.cta.browse'|trans }}</a>
+          <a class="btn btn-outline" href="#how-it-works">How it works</a>
+        </div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="miaza-card" aria-hidden="true">
+          <img src="https://www.portes-haut-doubs.com/sites/portes-haut-doubs.com/files/Vivre_au_quotidien/S_investir_dans_une_association/association.jpg" alt="Community supporting each other" style="width:100%;height:320px;object-fit:cover;"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if events is defined and events|length > 0 %}
+<section class="section bg-light">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="mb-0">{{ 'upcoming_events'|trans }}</h2>
+      <a href="{{ path('app_evenement_index') }}" class="text-muted small">{{ 'see_all'|trans }}</a>
+    </div>
+
+      <div class="row g-3">
+        {% for ev in events %}
+          <div class="col-md-4">
+            <article class="miaza-card h-100">
+              {% if ev.imagePath is not empty %}
+                <img src="{{ asset(ev.imagePath) }}" alt="{{ ev.title }}" class="img-fluid rounded-top" style="height:180px;object-fit:cover;width:100%;">
+              {% endif %}
+              <div class="card-body">
+                <h3 class="h6 mb-1"><a href="{{ path('app_evenement_show', {'id': ev.id}) }}">{{ ev.title }}</a></h3>
+                <div class="small text-muted mb-2">{{ ev.startAt|date('M d, Y H:i') }} • {{ ev.location|default('Online') }}</div>
+                <p class="small text-muted">{{ ev.description|striptags|slice(0,120) ~ '...' }}</p>
+                <a href="{{ path('app_evenement_show', {'id': ev.id}) }}" class="btn btn-sm btn-outline-primary mt-2">{{ 'view_event'|trans }}</a>
+              </div>
+            </article>
+          </div>
+        {% endfor %}
+      </div>
+  </div>
+</section>
+{% endif %}
+
+{% set items = cases|default(caseSocials|default([])) %}
+{% if items is not empty %}
+<section class="section">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="mb-0">{{ 'featured_cases'|trans }}</h2>
+      <a href="{{ path('app_case_social_index') }}" class="text-muted small">{{ 'see_all'|trans }}</a>
+    </div>
+
+    <div class="cards-grid">
+      {% for case in items|slice(0,6) %}
+        <article class="miaza-card">
+          {% if case.photo is defined and case.photo %}
+            <img class="case-image" src="{{ asset(case.photo) }}" alt="{{ case.title|default('Case image') }}">
+          {% else %}
+            <div class="case-image d-flex align-items-end" style="background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.06));"> 
+              <div class="p-3">
+                <span class="badge-category">{{ case.category.name|default('General') }}</span>
+              </div>
+            </div>
+          {% endif %}
+          <div class="card-body">
+            <h3 class="case-title"><a href="{{ path('app_case_social_show', {'id': case.id}) }}">{{ case.title|default('Untitled case') }}</a></h3>
+            <p class="case-meta text-muted">{{ case.description|striptags|slice(0,120) ~ '...' }}</p>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div class="d-flex gap-2 align-items-center">
+                {% if case.urgent is defined and case.urgent %}
+                  <span class="badge-urgent">Urgent</span>
+                {% endif %}
+                <small class="text-muted">{{ case.createdAt is defined ? case.createdAt|date('M d, Y') : '' }}</small>
+              </div>
+              <a class="btn btn-outline btn-sm" href="{{ path('app_case_social_show', {'id': case.id}) }}">{{ 'view'|trans }}</a>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section id="how-it-works" class="section bg-white">
+  <div class="container">
+    <h2 class="mb-4">How it works</h2>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <a class="text-reset text-decoration-none" href="{{ path('app_how_discover') }}">
+          <div class="miaza-card p-3 text-center h-100">
+            <div class="mb-2"><i class="bi bi-search fs-2 text-gradient"></i></div>
+            <h3 class="h5">Discover</h3>
+            <p class="text-muted small">Browse verified cases curated by our community and partners.</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a class="text-reset text-decoration-none" href="{{ path('app_how_donate') }}">
+          <div class="miaza-card p-3 text-center h-100">
+            <div class="mb-2"><i class="bi bi-heart-pulse fs-2 text-gradient"></i></div>
+            <h3 class="h5">Donate</h3>
+            <p class="text-muted small">Secure payments and transparent allocations for each case.</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a class="text-reset text-decoration-none" href="{{ path('app_how_impact') }}">
+          <div class="miaza-card p-3 text-center h-100">
+            <div class="mb-2"><i class="bi bi-globe2 fs-2 text-gradient"></i></div>
+            <h3 class="h5">Impact</h3>
+            <p class="text-muted small">See follow-up stories and real outcomes from supported causes.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="mb-4">Why trust universellecellule</h2>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="text-center">
+          <i class="bi bi-award fs-1 text-gradient"></i>
+          <h3 class="h5 mt-2">Verified cases</h3>
+          <p class="text-muted small">Every listing is reviewed by our moderation team.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center">
+          <i class="bi bi-bar-chart-line fs-1 text-gradient"></i>
+          <h3 class="h5 mt-2">Transparent impact</h3>
+          <p class="text-muted small">Reports and receipts are available for donors.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center">
+          <i class="bi bi-shield-lock fs-1 text-gradient"></i>
+          <h3 class="h5 mt-2">Secure process</h3>
+          <p class="text-muted small">Encrypted payments and secure handling of data.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

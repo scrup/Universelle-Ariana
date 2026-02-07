@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Donate — How it works{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ path('app_homepage') }}">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Donate</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <h1 class="h3 mb-3">Donate safely and transparently</h1>
+      <p class="lead">We provide secure payments and clear allocation information for every case. When you donate, you receive a confirmation and the case owner provides follow-up updates.</p>
+
+      <h2 class="h5 mt-4">Payment options</h2>
+      <p>We support credit/debit cards and common local payment methods. All payments are processed via a PCI-compliant gateway.</p>
+
+      <h2 class="h5 mt-4">Allocation & reporting</h2>
+      <p>Each case shows exactly how funds will be used. Receipts and impact reports are posted to the case updates so donors can follow outcomes.</p>
+
+      <a class="btn btn-primary mt-3" href="{{ path('app_case_social_index') }}">Find a case to support</a>
+    </div>
+    <aside class="col-lg-4">
+      <div class="miaza-card p-3">
+        <h6 class="mb-2">Security</h6>
+        <p class="small text-muted">Payments are encrypted and we never store full card details.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+    <div class="card p-4">
+        <h3 class="mb-4">{{ button_label is defined ? 'Edit Case' : 'Create New Case' }}</h3>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.title) }}
+                    {{ form_widget(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Enter case title'}}) }}
+                    {{ form_errors(form.title) }}
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.categorie) }}
+                    {{ form_widget(form.categorie, {'attr': {'class': 'form-select'}}) }}
+                    {{ form_errors(form.categorie) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '5', 'placeholder': 'Describe the social case in detail...'}}) }}
+            {{ form_errors(form.description) }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.cha9a9aLink) }}
+                    {{ form_widget(form.cha9a9aLink, {'attr': {'class': 'form-control', 'placeholder': 'https://cha9a9a.com/...', 'type': 'url'}}) }}
+                    {{ form_errors(form.cha9a9aLink) }}
+                    <small class="text-muted">Link to the Cha9a9a donation page</small>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <div class="form-check mt-4">
+                        {{ form_widget(form.isUrgent, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(form.isUrgent, 'Mark as Urgent', {'label_attr': {'class': 'form-check-label'}}) }}
+                    </div>
+                    {{ form_errors(form.isUrgent) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.images) }}
+            {{ form_widget(form.images, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.images) }}
+            <small class="text-muted">You may upload multiple images (optional).</small>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            {{ form_rest(form) }}
+            <a href="{{ path('app_case_social_index') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button class="btn btn-primary" type="submit">{{ button_label|default('Save Case') }}</button>
+        </div>
+    </div>
+{{ form_end(form) }}

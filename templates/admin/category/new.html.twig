@@ -1,0 +1,7 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Category — Admin{% endblock %}
+
+{% block body %}
+    {% include 'admin/category/_form.html.twig' with {'form': form} %}
+{% endblock %}

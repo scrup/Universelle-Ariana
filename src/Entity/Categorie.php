@@ -19,6 +19,7 @@ class Categorie
     private ?int $id = null;
 
     #[ORM\Column(length: 80)]
+
     private string $name = '';
 
     #[ORM\Column(length: 100, nullable: true)]

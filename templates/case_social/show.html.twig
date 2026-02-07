@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ caseSocial.title|default('Case') }} — universellecellule{% endblock %}
+
+{% block body %}
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('app_homepage') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_case_social_index') }}">Cases</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ caseSocial.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        {# Main content #}
+        <div class="col-lg-8">
+            <div class="card miaza-card mb-4">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                        <div>
+                            <h1 class="h4 fw-bold mb-2">{{ caseSocial.title }}</h1>
+                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                <span class="badge-category">{{ caseSocial.categorie.name|default('General') }}</span>
+                                {% if caseSocial.isUrgent() %}
+                                    <span class="badge-urgent">Urgent</span>
+                                {% endif %}
+                                <small class="text-muted">{{ caseSocial.createdAt|date('M d, Y') }}</small>
+                            </div>
+                        </div>
+                        <small class="text-muted"><i class="bi bi-eye me-1"></i>{{ caseSocial.viewsCount|default(0) }} views</small>
+                    </div>
+
+                    <div class="case-description mb-4">{{ caseSocial.description|raw }}</div>
+
+                    {% if caseSocial.photos is defined and caseSocial.photos|length > 0 %}
+                        <div class="gallery mt-4">
+                            <h6 class="fw-bold mb-3">Gallery</h6>
+                            <div class="row g-3">
+                                {% for photo in caseSocial.photos %}
+                                    <div class="col-6 col-md-4">
+                                        <img src="{{ asset(photo.filePath) }}" alt="{{ photo.caption|default('Case photo') }}" class="img-fluid rounded-3 w-100" style="height: 180px; object-fit: cover;">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <hr class="my-4">
+                    <div class="small text-muted">
+                        <strong>Publisher:</strong> {{ caseSocial.publisher.email|default('Unknown') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Sidebar #}
+        <aside class="col-lg-4">
+            <div class="card miaza-card sticky-sidebar">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-4">Support this cause</h5>
+
+                    {% if is_granted('ROLE_DONATEUR') %}
+                        <a href="{{ path('app_case_social_donate', {id: caseSocial.id}) }}" class="btn btn-primary btn-lg w-100 mb-2"><i class="bi bi-heart-fill me-2"></i>Donate</a>
+                        {% if caseSocial.cha9a9aLink is defined and caseSocial.cha9a9aLink %}
+                            <a href="{{ caseSocial.cha9a9aLink }}" target="_blank" rel="noopener" class="btn btn-outline-primary w-100 mb-3">Open Cha9a9a</a>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-info mb-3">
+                            <i class="bi bi-info-circle me-2"></i>Please <a href="{{ path('app_login') }}" class="alert-link">login</a> to donate.
+                        </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between py-2">
+                        <span class="text-muted">Donations</span>
+                        <strong>{{ caseSocial.donations|length|default(0) }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between py-2">
+                        <span class="text-muted">Category</span>
+                        <span>{{ caseSocial.categorie.name|default('General') }}</span>
+                    </div>
+                    {% if caseSocial.isUrgent() %}
+                        <div class="d-flex justify-content-between py-2">
+                            <span class="text-muted">Status</span>
+                            <span class="badge-urgent">Urgent</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if is_granted('ROLE_ADMIN') or (app.user and caseSocial.publisher and app.user == caseSocial.publisher) %}
+                <div class="card miaza-card mt-3">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Manage</h6>
+                        <a href="{{ path('app_case_social_edit', {id: caseSocial.id}) }}" class="btn btn-outline-primary btn-sm w-100 mb-2"><i class="bi bi-pencil me-1"></i>Edit</a>
+                        <form method="post" action="{{ path('app_case_social_delete', {id: caseSocial.id}) }}" onsubmit="return confirm('Are you sure you want to delete this case?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ caseSocial.id) }}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100"><i class="bi bi-trash me-1"></i>Delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </aside>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ path('app_case_social_index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back to Cases</a>
+    </div>
+{% endblock %}

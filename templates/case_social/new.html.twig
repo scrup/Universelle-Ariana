@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Social Case{% endblock %}
+
+{% block body %}
+    <div class="mb-4">
+        <h1>Create New Social Case</h1>
+        <p class="lead text-muted">Help a social cause by publishing a case and enabling donations.</p>
+    </div>
+
+    {{ include('case_social/_form.html.twig', {'button_label': 'Create Case'}) }}
+{% endblock %}

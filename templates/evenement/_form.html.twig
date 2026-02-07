@@ -1,0 +1,44 @@
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    <div class="card p-3">
+        <div class="mb-3">
+            {{ form_label(form.title) }}
+            {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.title) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+            {{ form_errors(form.description) }}
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.startAt) }}
+                    {{ form_widget(form.startAt, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.startAt) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.location) }}
+                    {{ form_widget(form.location, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.location) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.image) }}
+            {{ form_widget(form.image, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.image) }}
+            <small class="text-muted">Optional hero image for the event (jpg/png).</small>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+            <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+    </div>
+{{ form_end(form) }}

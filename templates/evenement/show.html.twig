@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ event.title }} — Event{% endblock %}
+
+{% block body %}
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('app_homepage') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_evenement_index') }}">Events</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ event.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card miaza-card mb-4">
+                <div class="card-body">
+                    <h1 class="h4 fw-bold">{{ event.title }}</h1>
+                    <div class="text-muted small mb-3">{{ event.startAt|date('M d, Y H:i') }} • {{ event.location|default('Online') }}</div>
+                    {% if event.imagePath is not empty %}
+                        <div class="mb-4">
+                            <img src="{{ asset(event.imagePath) }}" alt="{{ event.title }}" class="img-fluid rounded mb-3" loading="lazy">
+                        </div>
+                    {% endif %}
+                    <div class="mb-4">{{ event.description|raw }}</div>
+                </div>
+            </div>
+        </div>
+        <aside class="col-lg-4">
+            <div class="card miaza-card">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">Event Details</h6>
+                    <div class="small text-muted mb-2">Organizer</div>
+                    <div class="mb-3">{{ event.createdBy.email|default('—') }}</div>
+                    <a href="{{ path('app_evenement_index') }}" class="btn btn-outline-secondary w-100">Back to Events</a>
+                </div>
+            </div>
+        </aside>
+    </div>
+{% endblock %}

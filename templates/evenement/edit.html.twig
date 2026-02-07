@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Event — {{ event.title }}{% endblock %}
+
+{% block body %}
+    <div class="mb-4">
+        <h1>Edit Event</h1>
+        <p class="text-muted small">{{ event.title }}</p>
+    </div>
+
+    {% include 'evenement/_form.html.twig' with {'form': form} %}
+{% endblock %}
