@@ -7,6 +7,8 @@ use App\Entity\CaseSocial;
 use App\Form\CaseSocialType;
 use App\Repository\CaseSocialRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\CategorieRepository;
+
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,19 +19,30 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/case/social')]
 final class CaseSocialController extends AbstractController
 {
-    #[Route(name: 'app_case_social_index', methods: ['GET'])]
-    public function index(CaseSocialRepository $caseSocialRepository): Response
-    {
-        $all = $caseSocialRepository->findAll();
+  #[Route(name: 'app_case_social_index', methods: ['GET'])]
+public function index(
+    Request $request,
+    CaseSocialRepository $caseSocialRepository,
+    CategorieRepository $categorieRepository
+): Response
+{
+    $q = $request->query->get('q', '');
+    $category = $request->query->get('category');
+    $sort = $request->query->get('sort', '');
 
-        // provide multiple variable names so templates using different keys work
-        return $this->render('case_social/index.html.twig', [
-            'case_socials' => $all,
-            'caseSocials' => $all,
-            'cases' => $all,
-        ]);
-    }
+    $categoryId = $category !== null && $category !== '' ? (int) $category : null;
 
+    $all = $caseSocialRepository->searchFilterSort($q, $categoryId, $sort);
+
+    return $this->render('case_social/index.html.twig', [
+        'case_socials' => $all,
+        'caseSocials' => $all,
+        'cases' => $all,
+
+        // for the category dropdown in twig
+        'categories' => $categorieRepository->findAll(),
+    ]);
+}
     #[Route('/new', name: 'app_case_social_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -44,6 +57,7 @@ final class CaseSocialController extends AbstractController
                 $caseSocial->setPublisher($user);
             }
 
+            $caseSocial->setStatus(CaseSocial::STATUS_PUBLISHED);
             $entityManager->persist($caseSocial);
             $entityManager->flush();
 
