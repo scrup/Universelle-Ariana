@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+<div class="fixed bottom-4 right-4 bg-white shadow rounded-xl p-3 flex gap-2 items-center">
+  <button
+    id="tts-toggle"
+    class="px-3 py-1 rounded bg-gray-900 text-white"
+    type="button"
+  onclick="
+    if (!window.ttsHover) { console.error('ttsHover is undefined: tts-hover.js not loaded'); alert('TTS script not loaded'); return; }
+    const on = window.ttsHover.toggle();
+    this.textContent = on ? 'TTS ON' : 'TTS OFF';
+  "
+>
+  TTS ON
+</button>
+
+</div>
+
+<script>
+  // Set initial button label based on saved state
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('tts-toggle');
+    const on = window.ttsHover?.getState?.().enabled ?? true;
+    btn.textContent = on ? 'TTS ON' : 'TTS OFF';
+  });
+</script>
+
+
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Dashboard</h1>
+
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-blue-50 p-6 rounded-lg">
+            <h3 class="text-gray-600 text-sm font-semibold mb-2">nombre total des cas</h3>
+            <a href="/contact">Contact</a>
+
+            <p class="text-3xl font-bold text-blue-600">{{ total_cases }}</p>
+        </div>
+        <div class="bg-green-50 p-6 rounded-lg">
+            <h3 class="text-gray-600 text-sm font-semibold mb-2">Total Donations</h3>
+            <p class="text-3xl font-bold text-green-600">{{ total_donations }}</p>
+        </div>
+        <div class="bg-purple-50 p-6 rounded-lg">
+            <h3 class="text-gray-600 text-sm font-semibold mb-2">Total evenements</h3>
+            <p class="text-3xl font-bold text-purple-600">{{ total_events }}</p>
+        </div>
+    </div>
+
+    <!-- Recent Cases -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">Cas recents</h2>
+        {% if recent_cases %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border border-gray-300 px-4 py-2 text-left">Titre</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">Status</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">vues</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">Crée</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for case in recent_cases %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-300 px-4 py-2">{{ case.title }}</td>
+                            <td class="border border-gray-300 px-4 py-2">
+                                <span class="px-2 py-1 rounded text-sm font-semibold
+                                    {% if case.status == 'PUBLISHED' %}bg-green-100 text-green-800
+                                    {% elseif case.status == 'PENDING' %}bg-yellow-100 text-yellow-800
+                                    {% else %}bg-red-100 text-red-800{% endif %}">
+                                    {{ case.status }}
+                                </span>
+                            </td>
+                            <td class="border border-gray-300 px-4 py-2">{{ case.viewsCount }}</td>
+                            <td class="border border-gray-300 px-4 py-2">{{ case.createdAt|date('Y-m-d H:i') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500">Aucun cas trouvé.</p>
+        {% endif %}
+    </div>
+
+    <!-- Recent Donations -->
+    <div>
+        <h2 class="text-2xl font-bold mb-4">Donations recents</h2>
+        {% if recent_donations %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full border-collapse border border-gray-300">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border border-gray-300 px-4 py-2 text-left">Montant</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">Donateur</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">Cas</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donation in recent_donations %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="border border-gray-300 px-4 py-2 font-semibold">{{ donation.amount }} DZD</td>
+                            <td class="border border-gray-300 px-4 py-2">{{ donation.donor.email }}</td>
+                            <td class="border border-gray-300 px-4 py-2">{{ donation.caseSocial.title }}</td>
+                            <td class="border border-gray-300 px-4 py-2">{{ donation.donatedAt|date('Y-m-d H:i') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500">Aucune donation trouvée.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

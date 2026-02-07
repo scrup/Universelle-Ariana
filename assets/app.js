@@ -7,4 +7,7 @@ import './stimulus_bootstrap.js';
  */
 import './styles/app.css';
 
+import "./tts-hover.js";
+console.log("app.js loaded ✅");
+
 console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
