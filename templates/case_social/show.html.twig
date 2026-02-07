@@ -38,7 +38,10 @@
                             <div class="row g-3">
                                 {% for photo in caseSocial.photos %}
                                     <div class="col-6 col-md-4">
-                                        <img src="{{ asset(photo.filePath) }}" alt="{{ photo.caption|default('Case photo') }}" class="img-fluid rounded-3 w-100" style="height: 180px; object-fit: cover;">
+                                        <img src="{{ asset(photo.filePath) }}"
+                                             alt="{{ photo.caption|default('Case photo') }}"
+                                             class="img-fluid rounded-3 w-100"
+                                             style="height: 180px; object-fit: cover;">
                                     </div>
                                 {% endfor %}
                             </div>
@@ -51,6 +54,12 @@
                     </div>
                 </div>
             </div>
+
+            <div class="mt-2">
+                <a href="{{ path('app_case_social_index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Cases
+                </a>
+            </div>
         </div>
 
         {# Sidebar #}
@@ -60,32 +69,135 @@
                     <h5 class="fw-bold mb-4">Support this cause</h5>
 
                     {% if is_granted('ROLE_DONATEUR') %}
-                        <a href="{{ path('app_case_social_donate', {id: caseSocial.id}) }}" class="btn btn-primary btn-lg w-100 mb-2"><i class="bi bi-heart-fill me-2"></i>Donate</a>
+                        <a href="{{ path('app_case_social_donate', {id: caseSocial.id}) }}"
+                           class="btn btn-primary btn-lg w-100 mb-2">
+                            <i class="bi bi-heart-fill me-2"></i>Donate
+                        </a>
                         {% if caseSocial.cha9a9aLink is defined and caseSocial.cha9a9aLink %}
-                            <a href="{{ caseSocial.cha9a9aLink }}" target="_blank" rel="noopener" class="btn btn-outline-primary w-100 mb-3">Open Cha9a9a</a>
+                            <a href="{{ caseSocial.cha9a9aLink }}" target="_blank" rel="noopener"
+                               class="btn btn-outline-primary w-100 mb-3">
+                                Open Cha9a9a
+                            </a>
                         {% endif %}
                     {% else %}
                         <div class="alert alert-info mb-3">
-                            <i class="bi bi-info-circle me-2"></i>Please <a href="{{ path('app_login') }}" class="alert-link">login</a> to donate.
+                            <i class="bi bi-info-circle me-2"></i>
+                            Please <a href="{{ path('app_login') }}" class="alert-link">login</a> to donate.
                         </div>
+                    {% endif %}
+
+                    {# Cha9a9a widget #}
+                    {% if caseSocial.title %}
+                        <div class="miaza-ext-card mb-3">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="fw-bold">Cha9a9a progress</div>
+                                <span class="miaza-pill"><i class="bi bi-link-45deg me-1"></i>Live</span>
+                            </div>
+
+                            <div id="cha9a9aStatus" class="text-muted small">Loading…</div>
+
+                            <div class="progress miaza-progress mt-2" style="height:10px;">
+                                <div id="cha9a9aBar" class="progress-bar" role="progressbar" style="width:0%"></div>
+                            </div>
+
+                            <div class="row g-2 mt-3">
+                                <div class="col-6">
+                                    <div class="miaza-stat">
+                                        <div class="label">Collected</div>
+                                        <div class="value" id="cha9a9aCollected">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="miaza-stat">
+                                        <div class="label">Goal</div>
+                                        <div class="value" id="cha9a9aGoal">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="miaza-stat">
+                                        <div class="label">Participants</div>
+                                        <div class="value" id="cha9a9aParticipants">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="miaza-stat">
+                                        <div class="label">Days left</div>
+                                        <div class="value" id="cha9a9aDays">—</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if caseSocial.cha9a9aLink is defined and caseSocial.cha9a9aLink %}
+                                <div class="mt-3">
+                                    <a href="{{ caseSocial.cha9a9aLink }}" target="_blank" rel="noopener"
+                                       class="btn btn-outline-primary btn-sm w-100">
+                                        Open on Cha9a9a
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <script>
+                          (async function(){
+                            const name = "{{ caseSocial.title|e('js') }}";
+                            const url = "/api/cha9a9a/stats?name=" + encodeURIComponent(name);
+
+                            function fmt(n){
+                              if (n === null || n === undefined) return "—";
+                              return new Intl.NumberFormat('fr-TN').format(n);
+                            }
+
+                            try{
+                              const res = await fetch(url);
+                              const data = await res.json();
+
+                              if(data.error){
+                                document.getElementById('cha9a9aStatus').innerText = data.error;
+                                return;
+                              }
+
+                              const percent = data.percent ?? 0;
+                              document.getElementById('cha9a9aStatus').innerHTML =
+                                `<span class="fw-bold">${percent}%</span> funded`;
+
+                              document.getElementById('cha9a9aBar').style.width = percent + "%";
+                              document.getElementById('cha9a9aCollected').innerText = fmt(data.collected) + " DT";
+                              document.getElementById('cha9a9aGoal').innerText = fmt(data.goal) + " DT";
+                              document.getElementById('cha9a9aParticipants').innerText = fmt(data.participants);
+                              document.getElementById('cha9a9aDays').innerText = fmt(data.daysRemaining);
+
+                            }catch(e){
+                              document.getElementById('cha9a9aStatus').innerText = "Failed to load external data.";
+                            }
+                          })();
+                        </script>
                     {% endif %}
 
                     <hr>
 
-                    <div class="d-flex justify-content-between py-2">
-                        <span class="text-muted">Donations</span>
-                        <strong>{{ caseSocial.donations|length|default(0) }}</strong>
-                    </div>
-                    <div class="d-flex justify-content-between py-2">
-                        <span class="text-muted">Category</span>
-                        <span>{{ caseSocial.categorie.name|default('General') }}</span>
-                    </div>
-                    {% if caseSocial.isUrgent() %}
-                        <div class="d-flex justify-content-between py-2">
-                            <span class="text-muted">Status</span>
-                            <span class="badge-urgent">Urgent</span>
+                    {# Clean info list #}
+                    <div class="miaza-info-list">
+                        <div class="miaza-info-row">
+                            <span class="label">Donations</span>
+                            <span class="value">{{ caseSocial.donations|length|default(0) }}</span>
                         </div>
-                    {% endif %}
+
+                        <div class="miaza-info-row">
+                            <span class="label">Category</span>
+                            <span class="value text-end">
+                                <span class="miaza-chip">{{ caseSocial.categorie.name|default('General') }}</span>
+                            </span>
+                        </div>
+
+                        {% if caseSocial.isUrgent() %}
+                            <div class="miaza-info-row">
+                                <span class="label">Status</span>
+                                <span class="value text-end">
+                                    <span class="badge-urgent">Urgent</span>
+                                </span>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
@@ -93,18 +205,20 @@
                 <div class="card miaza-card mt-3">
                     <div class="card-body">
                         <h6 class="fw-bold mb-3">Manage</h6>
-                        <a href="{{ path('app_case_social_edit', {id: caseSocial.id}) }}" class="btn btn-outline-primary btn-sm w-100 mb-2"><i class="bi bi-pencil me-1"></i>Edit</a>
-                        <form method="post" action="{{ path('app_case_social_delete', {id: caseSocial.id}) }}" onsubmit="return confirm('Are you sure you want to delete this case?');">
+                        <a href="{{ path('app_case_social_edit', {id: caseSocial.id}) }}"
+                           class="btn btn-outline-primary btn-sm w-100 mb-2">
+                            <i class="bi bi-pencil me-1"></i>Edit
+                        </a>
+                        <form method="post" action="{{ path('app_case_social_delete', {id: caseSocial.id}) }}"
+                              onsubmit="return confirm('Are you sure you want to delete this case?');">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ caseSocial.id) }}">
-                            <button type="submit" class="btn btn-outline-danger btn-sm w-100"><i class="bi bi-trash me-1"></i>Delete</button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                <i class="bi bi-trash me-1"></i>Delete
+                            </button>
                         </form>
                     </div>
                 </div>
             {% endif %}
         </aside>
-    </div>
-
-    <div class="mt-4">
-        <a href="{{ path('app_case_social_index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back to Cases</a>
     </div>
 {% endblock %}

@@ -158,7 +158,7 @@
       .uc-camBtn{
         position: fixed;
         right: 16px;
-        top: 50%;
+        top: 40%;
         transform: translateY(-50%);
         z-index: 999999;
         background: #8a232e;

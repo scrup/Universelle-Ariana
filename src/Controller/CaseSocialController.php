@@ -190,4 +190,5 @@ public function index(
 
         return $this->redirectToRoute('app_case_social_index', [], Response::HTTP_SEE_OTHER);
     }
+    
 }
