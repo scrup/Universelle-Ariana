@@ -3,6 +3,7 @@
     <head>
         <html lang="fr">
 
+<<<<<<< Updated upstream
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Welcome!{% endblock %}</title>
@@ -17,3 +18,157 @@
         {% block body %}{% endblock %}
     </body>
 </html>
+=======
+    {# Bootstrap 5 CSS (CDN) - integrity removed to avoid blocked CSS #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom stylesheet -->
+    <link rel="stylesheet" href="{{ asset('assets/app.css') }}">
+
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="bg-light d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top" role="navigation" aria-label="Main navigation">
+        <div class="container-fluid px-3 px-lg-4">
+                <a class="navbar-brand d-flex align-items-center" href="{{ path('app_homepage') }}">
+             <img src="C:\Users\MSI\OneDrive\Documents\GitHub\Universelle-Ariana\assets\images\logo.png" alt="Universelle Ariana" height="80">
+
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_homepage') }}">{{ 'home.title'|trans }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_case_social_index') }}">{{ 'nav.cases'|trans }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_evenement_index') }}">{{ 'nav.events'|trans }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_contact') }}">{{ 'nav.contact'|trans }}</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    {% if app.user %}
+                        {# Admin users #}
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_admin_dashboard') }}">Admin</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_admin_category_index') }}">Categories</a>
+                            </li>
+                        {% endif %}
+
+                        {# Association users (publishers) #}
+                        {% if is_granted('ROLE_ASSOC') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_case_social_new') }}">Create Case</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_association_dashboard') }}">My Cases</a>
+                            </li>
+                        {% endif %}
+
+                        {# Donor users #}
+                        {% if is_granted('ROLE_DONATEUR') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_profile_donations') }}">My Donations</a>
+                            </li>
+                        {% endif %}
+
+                        {# Common: personalized dashboard link for any authenticated user without admin/assoc/donor specific link #}
+                        {% if not is_granted('ROLE_ADMIN') and not is_granted('ROLE_ASSOC') and not is_granted('ROLE_DONATEUR') %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_profile_donations') }}">Dashboard</a>
+                            </li>
+                        {% endif %}
+
+                        <li class="nav-item">
+                            <form method="post" action="{{ path('app_logout') }}" class="d-inline">
+                                <button type="submit" class="btn btn-link nav-link p-0">Logout</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary btn-sm ms-2" href="{{ path('app_register') }}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav ms-3">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="langDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ app.request.locale|upper }}</a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="langDropdown">
+                            <li><a class="dropdown-item" href="{{ path('app_set_locale', {'locale':'en'}) }}">English</a></li>
+                            <li><a class="dropdown-item" href="{{ path('app_set_locale', {'locale':'fr'}) }}">Français</a></li>
+                            <li><a class="dropdown-item" href="{{ path('app_set_locale', {'locale':'ar'}) }}">العربية</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="{% block main_class %}container container-lg{% endblock %} flex-grow-1 py-5">
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer class="miaza-footer bg-dark text-light">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-2"><i class="bi bi-heart-fill text-gradient me-2"></i>universellecellule</h5>
+                    <p class="small text-muted">Connecting donors with verified social causes. Transparent, secure, community-first.</p>
+                </div>
+                <div class="col-6 col-md-2">
+                    <h6 class="mb-2 text-muted">{{ 'footer.explore'|trans }}</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-1"><a class="footer-link text-muted" href="{{ path('app_case_social_index') }}">{{ 'nav.cases'|trans }}</a></li>
+                        <li class="mb-1"><a class="footer-link text-muted" href="{{ path('app_evenement_index') }}">{{ 'nav.events'|trans }}</a></li>
+                        <li class="mb-1"><a class="footer-link text-muted" href="{{ path('app_homepage') }}">{{ 'home.title'|trans }}</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md-2">
+                    <h6 class="mb-2 text-muted">{{ 'footer.resources'|trans }}</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-1"><a class="footer-link text-muted" href="#">{{ 'footer.about'|trans }}</a></li>
+                        <li class="mb-1"><a class="footer-link text-muted" href="{{ path('app_how_discover') }}">{{ 'how.title'|trans }}</a></li>
+                        <li class="mb-1"><a class="footer-link text-muted" href="{{ path('app_contact') }}">{{ 'nav.contact'|trans }}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="mb-2 text-muted">Contact</h6>
+                    <p class="small text-muted mb-1"><i class="bi bi-envelope me-1"></i><a class="footer-link text-muted" href="mailto:universellecelluleariana@gmail.com">universellecelluleariana@gmail.com</a></p>
+                    <p class="small text-muted"><i class="bi bi-telephone me-1"></i>+212 5XX XXX XXX</p>
+                    <p class="small text-muted mt-2"><a class="footer-link text-muted" href="{{ path('app_contact') }}">Contact us</a></p>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center small text-muted">{{ 'footer.copy'|trans({'%year%': "now"|date('Y')}) }}</div>
+        </div>
+    </footer>
+
+    {# Bootstrap JS bundle (CDN) - integrity removed to avoid blocked JS #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block javascripts %}{% endblock %}
+    <script src="{{ asset('js/a11y-menu.js') }}"></script>
+    <script src="{{ asset('js/tts-hover.js') }}"></script>
+
+</body>
+</html>
+>>>>>>> Stashed changes

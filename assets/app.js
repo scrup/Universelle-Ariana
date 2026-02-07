@@ -6,8 +6,13 @@ import './stimulus_bootstrap.js';
  * which should already be in your base.html.twig.
  */
 import './styles/app.css';
+<<<<<<< Updated upstream
 
 import "./tts-hover.js";
 console.log("app.js loaded ✅");
 
+=======
+import "./tts-hover.js";
+console.log("app.js loaded ✅");
+>>>>>>> Stashed changes
 console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
